@@ -1,0 +1,17 @@
+{
+  "name": "photo-map.web",
+  "version": "0.0.0",
+  "description": "PhotoMap.Web",
+  "main": "server.js",
+  "author": {
+    "name": ""
+  },
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "connect": "^3.7.0",
+    "replace": "^1.2.0",
+    "serve-static": "^1.14.1"
+  }
+}

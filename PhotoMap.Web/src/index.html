@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        #myMap {
+            position: relative;
+            width: 600px;
+            height: 400px;
+        }
+    </style>
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=bingmapskey' async defer></script>
+    <script type="text/javascript">
+        function GetMap() {
+            this.map = new Microsoft.Maps.Map('#myMap');
+
+            window.chrome.webview.postMessage('{ "event":"BingMapLoaded"}');
+        }
+    </script>
+</head>
+<body>
+    heey world..
+    <div id="myMap"></div>
+</body>
+</html>

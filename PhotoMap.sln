@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30711.63
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoMap.Client", "PhotoMap.Client\PhotoMap.Client.csproj", "{386144A3-281B-411B-8C26-2532B0265D47}"
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "PhotoMap.Web", "PhotoMap.Web\PhotoMap.Web.njsproj", "{02CC1E44-39EF-4226-A8E6-4762185F5F5B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{386144A3-281B-411B-8C26-2532B0265D47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{386144A3-281B-411B-8C26-2532B0265D47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{386144A3-281B-411B-8C26-2532B0265D47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{386144A3-281B-411B-8C26-2532B0265D47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02CC1E44-39EF-4226-A8E6-4762185F5F5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02CC1E44-39EF-4226-A8E6-4762185F5F5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02CC1E44-39EF-4226-A8E6-4762185F5F5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02CC1E44-39EF-4226-A8E6-4762185F5F5B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {452A2DA3-F8B3-46CF-9AA9-C6BA9919420D}
+	EndGlobalSection
+EndGlobal
