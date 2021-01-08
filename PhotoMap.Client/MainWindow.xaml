@@ -9,6 +9,18 @@
         Title="MainWindow" Height="450" Width="800"
         Loaded="Window_Loaded">
     <Grid>
-        <wv2:WebView2 Name="webView" Source="https://granaker.se" WebMessageReceived="webView_WebMessageReceived" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button Height="22" x:Name="ScanDirectory" Click="ScanDirectory_Click">Scan directory</Button>
+        </StackPanel>
+        <wv2:WebView2 Grid.Row="1" Name="webView" Source="https://granaker.se" WebMessageReceived="webView_WebMessageReceived" />
+        <Image x:Name="PreviewImage"  Grid.Row="1" Grid.Column="1" />
     </Grid>
 </Window>

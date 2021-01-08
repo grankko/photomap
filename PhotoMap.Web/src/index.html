@@ -16,8 +16,14 @@
         function GetMap() {
             this.map = new Microsoft.Maps.Map('#myMap');
 
-            window.chrome.webview.postMessage('{ "event":"BingMapLoaded"}');
+            window.chrome.webview.postMessage({ "event":"BingMapLoaded", "parameter" : "" });
         }
+
+        function pinClick(e) {
+            console.log(e.target.filePath);
+            window.chrome.webview.postMessage({ "event":"PinClicked", "parameter" : e.target.filePath});
+        }
+
     </script>
 </head>
 <body>
