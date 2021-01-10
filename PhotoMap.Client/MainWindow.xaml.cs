@@ -23,6 +23,7 @@ namespace PhotoMap.Client
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// <remarks>todo: introcude ViewModel. Implement date filtering.</remarks>
     public partial class MainWindow : Window
     {
         private PhotoAnalyzerService _analyzerService = new PhotoAnalyzerService();
@@ -37,6 +38,17 @@ namespace PhotoMap.Client
             var html = File.ReadAllText("index.html");
             await webView.EnsureCoreWebView2Async();
             webView.NavigateToString(html);
+
+            _analyzerService.Worker.ProgressChanged += Worker_ProgressChanged;
+        }
+
+        private void Worker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            DirectoryInfoLabel.Content = $"{_analyzerService.DirectoryPath} ({_analyzerService.ImageFilesProcessed}/{_analyzerService.ImageFileCount})";
+            PhotoMetadataModel image = (PhotoMetadataModel)e.UserState;
+
+            if (image.HasGpsData)
+                SetPushpin(image.FormatedLatitude, image.FormatedLongitude, image.Id);
         }
 
         private void webView_WebMessageReceived(object sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e)
@@ -51,7 +63,7 @@ namespace PhotoMap.Client
             {
                 var id = Guid.Parse(message.Parameter);
                 var clickedImage = _analyzerService.Result.First(r => r.Id == id);
-                
+
                 PreviewImage.Source = new BitmapImage(new Uri(clickedImage.FileName));
 
                 PhotoTakenLabel.Visibility = Visibility.Visible;
@@ -71,6 +83,8 @@ namespace PhotoMap.Client
             PhotoTakenLabel.Visibility = Visibility.Hidden;
             PhotoTakenValue.Visibility = Visibility.Hidden;
 
+            webView.ExecuteScriptAsync("clearPins();");
+
             using (var dialog = new FolderBrowserDialog())
             {
                 DialogResult result = dialog.ShowDialog();
@@ -78,12 +92,9 @@ namespace PhotoMap.Client
                 {
                     var folder = dialog.SelectedPath;
                     _analyzerService.ScanDirectory(folder);
+                    DirectoryInfoLabel.Content = $"{folder} ({_analyzerService.ImageFilesProcessed}/{_analyzerService.ImageFileCount})";
 
-                    foreach (var image in _analyzerService.Result)
-                    {
-                        if (image.HasGpsData)
-                            SetPushpin(image.FormatedLatitude, image.FormatedLongitude, image.Id);
-                    }
+                    _analyzerService.StartAnalysis();
                 }
             }
         }

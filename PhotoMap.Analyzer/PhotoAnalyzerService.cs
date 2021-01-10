@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -11,15 +12,24 @@ namespace PhotoMap.Analyzer
 {
     public class PhotoAnalyzerService
     {
-        public List<PhotoMetadataModel> Result { get; set; }
+        public List<PhotoMetadataModel> Result { get; private set; }
+        public string DirectoryPath { get; private set; }
+        public int ImageFileCount { get; private set; }
+        public int ImageFilesProcessed { get; private set; }
 
-        public void ScanDirectory(string path)
+        public readonly BackgroundWorker Worker = new BackgroundWorker();
+
+        private IEnumerable<string> _imageFiles;
+
+        public PhotoAnalyzerService()
         {
-            // Todo: run on a background thread, populate as results come in
+            Worker.DoWork += AnalyzeFiles;
+            Worker.WorkerReportsProgress = true;
+        }
 
-            Result = new List<PhotoMetadataModel>();
-            var imageFiles = System.IO.Directory.GetFiles(path, "*.jpg", SearchOption.AllDirectories);
-            foreach (var imageFile in imageFiles)
+        private void AnalyzeFiles(object sender, DoWorkEventArgs e)
+        {
+            foreach (var imageFile in _imageFiles)
             {
                 var newMetadata = new PhotoMetadataModel();
                 newMetadata.FileName = imageFile;
@@ -39,7 +49,24 @@ namespace PhotoMap.Analyzer
                 }
 
                 Result.Add(newMetadata);
+                ImageFilesProcessed++;
+                var percentCompleted = (int)(ImageFilesProcessed / ImageFileCount)*100;
+                Worker.ReportProgress(percentCompleted, newMetadata);
             }
+        }
+
+        public void StartAnalysis()
+        {
+            Worker.RunWorkerAsync();
+        }
+
+        public void ScanDirectory(string path)
+        {
+            DirectoryPath = path;
+            Result = new List<PhotoMetadataModel>();
+            _imageFiles = System.IO.Directory.GetFiles(path, "*.jpg", SearchOption.AllDirectories); // todo: file formats
+            ImageFileCount = _imageFiles.Count();
+            ImageFilesProcessed = 0;
         }
 
         private static void ReadSubIfInformation(PhotoMetadataModel newMetadata, IReadOnlyList<MetadataExtractor.Directory> metadata)

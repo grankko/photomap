@@ -38,6 +38,15 @@
             Microsoft.Maps.Events.addHandler(pin, 'click', pinClick);
         }
 
+        function clearPins() {
+            for (var i = this.map.entities.getLength() - 1; i >= 0; i--) {
+                var pushpin = this.map.entities.get(i);
+                if (pushpin instanceof Microsoft.Maps.Pushpin) {
+                    this.map.entities.removeAt(i);
+                }
+            }
+        }
+
     </script>
 </head>
 <body>

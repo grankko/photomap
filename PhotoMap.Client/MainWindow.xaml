@@ -17,8 +17,9 @@
             <ColumnDefinition />
             <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
             <Button Height="22" x:Name="ScanDirectory" Click="ScanDirectory_Click" IsEnabled="False">Scan directory</Button>
+            <Label x:Name="DirectoryInfoLabel"></Label>
         </StackPanel>
         <wv2:WebView2 Grid.Row="1" Name="webView" Source="https://granaker.se" WebMessageReceived="webView_WebMessageReceived" />
         <Grid Grid.Row="1" Grid.Column="1">
