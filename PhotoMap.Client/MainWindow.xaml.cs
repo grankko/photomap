@@ -1,5 +1,4 @@
-﻿using MetadataExtractor;
-using MetadataExtractor.Formats.Exif;
+﻿using PhotoMap.Analyzer;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -26,6 +25,8 @@ namespace PhotoMap.Client
     /// </summary>
     public partial class MainWindow : Window
     {
+        private PhotoAnalyzerService _analyzerService = new PhotoAnalyzerService();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -44,27 +45,31 @@ namespace PhotoMap.Client
 
             if (message.Event == "BingMapLoaded")
             {
-                // ready to interact
+                ScanDirectory.IsEnabled = true;
             }
             else if (message.Event == "PinClicked")
             {
-                var imagePath = System.Web.HttpUtility.UrlDecode(message.Parameter);
-                PreviewImage.Source = new BitmapImage(new Uri(imagePath));
+                var id = Guid.Parse(message.Parameter);
+                var clickedImage = _analyzerService.Result.First(r => r.Id == id);
+                
+                PreviewImage.Source = new BitmapImage(new Uri(clickedImage.FileName));
+
+                PhotoTakenLabel.Visibility = Visibility.Visible;
+                PhotoTakenValue.Visibility = Visibility.Visible;
+                PhotoTakenValue.Content = clickedImage.PhotoTaken.HasValue ? clickedImage.PhotoTaken.Value.ToShortDateString() : "-";
+
             }
         }
-        private async void SetPushpin(string latitude, string longitude, string filePath)
+        private async void SetPushpin(string latitude, string longitude, Guid id)
         {
-            var setPinScript = $@"
-                var pin = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location({latitude}, {longitude}));
-                pin.filePath = escape('{System.Web.HttpUtility.JavaScriptStringEncode(filePath)}');
-                this.map.entities.push(pin);    
-                Microsoft.Maps.Events.addHandler(pin, 'click', pinClick);
-                ";
+            var setPinScript = $"setPin('{ latitude}', '{ longitude}', '{ id }');";
             await webView.ExecuteScriptAsync(setPinScript);
         }
 
         private void ScanDirectory_Click(object sender, RoutedEventArgs e)
         {
+            PhotoTakenLabel.Visibility = Visibility.Hidden;
+            PhotoTakenValue.Visibility = Visibility.Hidden;
 
             using (var dialog = new FolderBrowserDialog())
             {
@@ -72,31 +77,13 @@ namespace PhotoMap.Client
                 if (result == System.Windows.Forms.DialogResult.OK)
                 {
                     var folder = dialog.SelectedPath;
-                    var imageFiles = System.IO.Directory.GetFiles(folder, "*.jpg", SearchOption.AllDirectories);
-                    foreach (var imageFile in imageFiles)
+                    _analyzerService.ScanDirectory(folder);
+
+                    foreach (var image in _analyzerService.Result)
                     {
-                        try
-                        {
-                            var gps = ImageMetadataReader.ReadMetadata(imageFile)
-                                             .OfType<GpsDirectory>()
-                                             .FirstOrDefault();
-
-                            if (gps != null)
-                            {
-                                var location = gps.GetGeoLocation();
-                                if (location != null)
-                                {
-                                    var numberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "." };
-                                    SetPushpin(location.Latitude.ToString(numberFormat), location.Longitude.ToString(numberFormat), imageFile);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-
-                        }
+                        if (image.HasGpsData)
+                            SetPushpin(image.FormatedLatitude, image.FormatedLongitude, image.Id);
                     }
-
                 }
             }
         }

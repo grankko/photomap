@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoMap.Client", "PhotoMap
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "PhotoMap.Web", "PhotoMap.Web\PhotoMap.Web.njsproj", "{02CC1E44-39EF-4226-A8E6-4762185F5F5B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoMap.Analyzer", "PhotoMap.Analyzer\PhotoMap.Analyzer.csproj", "{1F954039-585F-4081-96EF-8C8BD44E9AEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{02CC1E44-39EF-4226-A8E6-4762185F5F5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02CC1E44-39EF-4226-A8E6-4762185F5F5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02CC1E44-39EF-4226-A8E6-4762185F5F5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F954039-585F-4081-96EF-8C8BD44E9AEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F954039-585F-4081-96EF-8C8BD44E9AEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F954039-585F-4081-96EF-8C8BD44E9AEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F954039-585F-4081-96EF-8C8BD44E9AEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
