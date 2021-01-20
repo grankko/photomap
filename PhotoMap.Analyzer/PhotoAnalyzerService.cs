@@ -25,12 +25,21 @@ namespace PhotoMap.Analyzer
         {
             Worker.DoWork += AnalyzeFiles;
             Worker.WorkerReportsProgress = true;
+            Worker.WorkerSupportsCancellation = true;
         }
 
         private void AnalyzeFiles(object sender, DoWorkEventArgs e)
         {
+            Result = new List<PhotoMetadataModel>();
+
             foreach (var imageFile in _imageFiles)
             {
+                if (Worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+
                 var newMetadata = new PhotoMetadataModel();
                 newMetadata.FileName = imageFile;
 
@@ -50,7 +59,7 @@ namespace PhotoMap.Analyzer
 
                 Result.Add(newMetadata);
                 ImageFilesProcessed++;
-                var percentCompleted = (int)(ImageFilesProcessed / ImageFileCount)*100;
+                var percentCompleted = (int)(ImageFilesProcessed / ImageFileCount) * 100;
                 Worker.ReportProgress(percentCompleted, newMetadata);
             }
         }
@@ -60,11 +69,19 @@ namespace PhotoMap.Analyzer
             Worker.RunWorkerAsync();
         }
 
+        public void CancelAnalysis()
+        {
+            Worker.CancelAsync();
+        }
+
         public void ScanDirectory(string path)
         {
             DirectoryPath = path;
-            Result = new List<PhotoMetadataModel>();
-            _imageFiles = System.IO.Directory.GetFiles(path, "*.jpg", SearchOption.AllDirectories); // todo: file formats
+
+            var extensions = new string[] { ".jpg", ".jpeg", ".heic", ".png" };
+            var selectedDirectory = new DirectoryInfo(path);
+            _imageFiles = selectedDirectory.EnumerateFiles("*", SearchOption.AllDirectories).Where(f => extensions.Contains(f.Extension.ToLower())).Select(fi => fi.FullName);
+
             ImageFileCount = _imageFiles.Count();
             ImageFilesProcessed = 0;
         }

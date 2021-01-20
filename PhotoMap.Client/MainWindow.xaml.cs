@@ -1,6 +1,7 @@
 ﻿using PhotoMap.Analyzer;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -40,11 +41,23 @@ namespace PhotoMap.Client
             webView.NavigateToString(html);
 
             _analyzerService.Worker.ProgressChanged += Worker_ProgressChanged;
+            _analyzerService.Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+        }
+
+        private void Worker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            ScanDirectory.Content = "Scan directory";
+
+            if (_analyzerService.Result.Count > 0)
+            {
+                FromFilter.IsEnabled = true;
+                ToFilter.IsEnabled = true;
+            }
         }
 
         private void Worker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
         {
-            DirectoryInfoLabel.Content = $"{_analyzerService.DirectoryPath} ({_analyzerService.ImageFilesProcessed}/{_analyzerService.ImageFileCount})";
+            DirectoryInfoLinkText.Text = $"{_analyzerService.DirectoryPath} ({_analyzerService.ImageFilesProcessed}/{_analyzerService.ImageFileCount})";
             PhotoMetadataModel image = (PhotoMetadataModel)e.UserState;
 
             if (image.HasGpsData)
@@ -65,6 +78,8 @@ namespace PhotoMap.Client
                 var clickedImage = _analyzerService.Result.First(r => r.Id == id);
 
                 PreviewImage.Source = new BitmapImage(new Uri(clickedImage.FileName));
+                PreviewImage.Tag = clickedImage.FileName;
+                PreviewImage.Visibility = Visibility.Visible;
 
                 PhotoTakenLabel.Visibility = Visibility.Visible;
                 PhotoTakenValue.Visibility = Visibility.Visible;
@@ -80,22 +95,68 @@ namespace PhotoMap.Client
 
         private void ScanDirectory_Click(object sender, RoutedEventArgs e)
         {
-            PhotoTakenLabel.Visibility = Visibility.Hidden;
-            PhotoTakenValue.Visibility = Visibility.Hidden;
-
-            webView.ExecuteScriptAsync("clearPins();");
-
-            using (var dialog = new FolderBrowserDialog())
+            if (_analyzerService.Worker.IsBusy)
             {
-                DialogResult result = dialog.ShowDialog();
-                if (result == System.Windows.Forms.DialogResult.OK)
+                _analyzerService.CancelAnalysis();
+            } else
+            {
+                using (var dialog = new FolderBrowserDialog())
                 {
-                    var folder = dialog.SelectedPath;
-                    _analyzerService.ScanDirectory(folder);
-                    DirectoryInfoLabel.Content = $"{folder} ({_analyzerService.ImageFilesProcessed}/{_analyzerService.ImageFileCount})";
+                    DialogResult result = dialog.ShowDialog();
+                    if (result == System.Windows.Forms.DialogResult.OK)
+                    {
+                        PhotoTakenLabel.Visibility = Visibility.Hidden;
+                        PhotoTakenValue.Visibility = Visibility.Hidden;
+                        PreviewImage.Visibility = Visibility.Hidden;
+                        FromFilter.SelectedDate = null;
+                        FromFilter.IsEnabled = false;
+                        ToFilter.SelectedDate = null;
+                        ToFilter.IsEnabled = false;
 
-                    _analyzerService.StartAnalysis();
+                        webView.ExecuteScriptAsync("clearPins();");
+
+                        var folder = dialog.SelectedPath;
+                        _analyzerService.ScanDirectory(folder);
+                        DirectoryInfoLink.Tag = folder;
+                        _analyzerService.StartAnalysis();
+                        ScanDirectory.Content = "Cancel";
+                    }
                 }
+            }
+        }
+
+        private void DirectoryInfoLink_Click(object sender, RoutedEventArgs e)
+        {
+            Process explorer = new Process();
+            explorer.StartInfo.FileName = "explorer.exe";
+            explorer.StartInfo.Arguments = ((Hyperlink)sender).Tag.ToString();
+            explorer.Start();
+        }
+
+        private void PreviewImage_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Process explorer = new Process();
+            explorer.StartInfo.FileName = "explorer.exe";
+            explorer.StartInfo.Arguments = ((Image)sender).Tag.ToString();
+            explorer.Start();
+        }
+
+        private async void Filter_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DateTime from = DateTime.MinValue;
+            DateTime to = DateTime.MaxValue;
+
+            if (FromFilter.SelectedDate.HasValue)
+                from = FromFilter.SelectedDate.Value;
+            if (ToFilter.SelectedDate.HasValue)
+                to = ToFilter.SelectedDate.Value;
+
+            foreach (var result in _analyzerService.Result)
+            {
+                var shouldShow = result.PhotoTaken.HasValue && result.PhotoTaken.Value >= from && result.PhotoTaken.Value <= to;
+
+                var togglePinVisibilityScript = $"togglePinVisibility('{ result.Id }', {shouldShow.ToString().ToLower()});";
+                await webView.ExecuteScriptAsync(togglePinVisibilityScript);
             }
         }
     }
