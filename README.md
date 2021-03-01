@@ -1,4 +1,9 @@
 # photomap
-Proof of concept - Reads GPS data from EXIF info in a jpg file, displays coordinates on Bing Maps in a WPF app using a WebView2 control.
+Proof of concept
+- Scans a directory for image files
+- Reads GPS data from EXIF info
+- Places pushpins on a Bing map for each image
 
 Expects a file called **bing-maps-key** containing your api key in the root of PhotoMap.Web directory .
+
+![screenshot](https://github.com/grankko/photomap/raw/main/screenshot.png)
