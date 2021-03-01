@@ -10,23 +10,20 @@ namespace PhotoMap.Client.ViewModels
 {
     public class ImageDetailsViewModel : ViewModelBase
     {
-        public RelayCommand OpenImageCommand { get; set; }
+        private bool _canOpenImage;
+        private string _selectedImageFileName;
+        private string _photoTaken;
+
         public string SelectedImageFileName
         {
-            get => selectedImageFileName;
+            get => _selectedImageFileName;
             set
             {
                 CanOpenImage = !string.IsNullOrEmpty(value);
-                selectedImageFileName = value;
+                _selectedImageFileName = value;
                 OnPropertyChanged();
             }
         }
-
-
-        private bool _canOpenImage;
-        private string selectedImageFileName;
-        private string photoTaken;
-
         public bool CanOpenImage
         {
             get => _canOpenImage;
@@ -39,13 +36,15 @@ namespace PhotoMap.Client.ViewModels
 
         public string PhotoTaken
         {
-            get => photoTaken;
+            get => _photoTaken;
             set
             {
-                photoTaken = value;
+                _photoTaken = value;
                 OnPropertyChanged();
             }
         }
+
+        public RelayCommand OpenImageCommand { get; set; }
 
         public ImageDetailsViewModel()
         {

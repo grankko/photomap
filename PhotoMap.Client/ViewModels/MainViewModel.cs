@@ -16,7 +16,6 @@ namespace PhotoMap.Client.ViewModels
         private string scanDirectoryLabel;
         private string selectedDirectoryProgressLabel;
         private DateTime? _fromDateFilter;
-
         private DateTime? _toDateFilter;
 
         public DateTime? ToDateFilter
@@ -73,11 +72,11 @@ namespace PhotoMap.Client.ViewModels
             }
         }
 
-
         public RelayCommand ScanDirectoryCommand { get; set; }
         public RelayCommand OpenDirectoryCommand { get; set; }
         public BingMapService BingMapService { get; set; }
         public ImageDetailsViewModel ImageDetailsVM { get; set; }
+
         public MainViewModel()
         {
             ImageDetailsVM = new ImageDetailsViewModel();

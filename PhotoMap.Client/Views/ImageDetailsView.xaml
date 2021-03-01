@@ -34,7 +34,7 @@
             </Image.InputBindings>
         </Image>
 
-        <Label x:Name="PhotoTakenLabel" Grid.Row="1" Grid.Column="0" Visibility="{Binding Path=PhotoTaken, Converter={StaticResource StringVisibilityConverter}}">Photo taken:</Label>
-        <Label x:Name="PhotoTakenValue" Grid.Row="1" Grid.Column="1" Content="{Binding Path=PhotoTaken}"></Label>
+        <Label Grid.Row="1" Grid.Column="0" Visibility="{Binding Path=PhotoTaken, Converter={StaticResource StringVisibilityConverter}}">Photo taken:</Label>
+        <Label Grid.Row="1" Grid.Column="1" Content="{Binding Path=PhotoTaken}"></Label>
     </Grid>
 </UserControl>

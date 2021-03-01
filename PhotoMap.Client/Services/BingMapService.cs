@@ -46,25 +46,11 @@ namespace PhotoMap.Client.Services
             if (message.Event == "BingMapLoaded")
             {
                 BingMapLoaded?.Invoke(this, new EventArgs());
-
-                //ScanDirectory.IsEnabled = true;
             }
             else if (message.Event == "PinClicked")
             {
                 var id = Guid.Parse(message.Parameter);
                 PinClicked?.Invoke(this, new PinClickedEventArgs(id));
-
-                //var clickedImage = _analyzerService.Result.First(r => r.Id == id);
-
-                //PreviewImage.Source = new BitmapImage(new Uri(clickedImage.FileName));
-                //PreviewImage.Tag = clickedImage.FileName;
-                //((MainViewModel)DataContext).ImageDetailsVM.SelectedImageFileName = clickedImage.FileName;
-                //PreviewImage.Visibility = Visibility.Visible;
-
-                //PhotoTakenLabel.Visibility = Visibility.Visible;
-                //PhotoTakenValue.Visibility = Visibility.Visible;
-                //PhotoTakenValue.Content = clickedImage.PhotoTaken.HasValue ? clickedImage.PhotoTaken.Value.ToShortDateString() : "-";
-
             }
         }
     }

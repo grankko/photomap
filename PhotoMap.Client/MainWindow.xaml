@@ -23,17 +23,17 @@
             <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
-            <Button Height="22" x:Name="ScanDirectory" Command="{Binding Path=ScanDirectoryCommand}" Content="{Binding ScanDirectoryLabel}" Margin="5" />
+            <Button Height="22" Command="{Binding Path=ScanDirectoryCommand}" Content="{Binding ScanDirectoryLabel}" Margin="5" />
             <TextBlock Height="22">
-                <Hyperlink x:Name="DirectoryInfoLink" Command="{Binding OpenDirectoryCommand}">
-                    <Run x:Name="DirectoryInfoLinkText" Text="{Binding SelectedDirectoryProgressLabel}" />
+                <Hyperlink Command="{Binding OpenDirectoryCommand}">
+                    <Run Text="{Binding SelectedDirectoryProgressLabel}" />
                 </Hyperlink>
             </TextBlock>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
             <Label>Filter: </Label>
-            <DatePicker x:Name="FromFilter" SelectedDate="{Binding Path=FromDateFilter}" />
-            <DatePicker x:Name="ToFilter" SelectedDate="{Binding Path=ToDateFilter}" />
+            <DatePicker SelectedDate="{Binding Path=FromDateFilter}" />
+            <DatePicker SelectedDate="{Binding Path=ToDateFilter}" />
         </StackPanel>
         <wv2:WebView2 Grid.Row="2" Name="webView" Source="https://granaker.se" />
         <views:ImageDetailsView Grid.Row="2" Grid.Column="1" DataContext="{Binding Path=ImageDetailsVM}" />
