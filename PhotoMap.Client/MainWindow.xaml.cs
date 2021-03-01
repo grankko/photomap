@@ -14,7 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -37,6 +36,18 @@ namespace PhotoMap.Client
             var html = File.ReadAllText("index.html");
             await webView.EnsureCoreWebView2Async();
             webView.NavigateToString(html);
+        }
+
+        private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var about = new About();
+            about.Owner = this;
+            about.ShowDialog();
+        }
+
+        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
         }
     }
 }

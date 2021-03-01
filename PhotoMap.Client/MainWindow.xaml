@@ -7,13 +7,17 @@
         xmlns:views="clr-namespace:PhotoMap.Client.Views"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
-        Title="PhotoMap" Height="800" Width="1200"
-        Loaded="Window_Loaded">
+        Title="Media Map" Height="800" Width="1200"
+        Loaded="Window_Loaded" WindowStyle="SingleBorderWindow">
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
             <RowDefinition Height="50" />
             <RowDefinition Height="50" />
             <RowDefinition />
@@ -22,20 +26,32 @@
             <ColumnDefinition />
             <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
-            <Button Height="22" Command="{Binding Path=ScanDirectoryCommand}" Content="{Binding ScanDirectoryLabel}" Margin="5" />
-            <TextBlock Height="22">
+        <DockPanel Grid.ColumnSpan="2" Grid.Row="0">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="Scan Directory.." Command="{Binding Path=ScanDirectoryCommand}" />
+                    <Separator />
+                    <MenuItem x:Name="ExitMenuItem" Header="_Exit" Click="ExitMenuItem_Click" />
+                </MenuItem>
+                <MenuItem Header="_Help">
+                    <MenuItem x:Name="AboutMenuItem" Header="_About" Click="AboutMenuItem_Click" />
+                </MenuItem>                
+            </Menu>
+        </DockPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
+            <Label>
                 <Hyperlink Command="{Binding OpenDirectoryCommand}">
                     <Run Text="{Binding SelectedDirectoryProgressLabel}" />
                 </Hyperlink>
-            </TextBlock>
+            </Label>
+            <Button Command="{Binding Path=CancelScanCommand}" Visibility="{Binding Path=CanCancelScan, Converter={StaticResource VisibilityConverter}}">Cancel scan</Button>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center">
             <Label>Filter: </Label>
             <DatePicker SelectedDate="{Binding Path=FromDateFilter}" />
             <DatePicker SelectedDate="{Binding Path=ToDateFilter}" />
         </StackPanel>
-        <wv2:WebView2 Grid.Row="2" Name="webView" Source="https://granaker.se" />
-        <views:ImageDetailsView Grid.Row="2" Grid.Column="1" DataContext="{Binding Path=ImageDetailsVM}" />
+        <wv2:WebView2 Grid.Row="3" Name="webView" Source="https://granaker.se" />
+        <views:ImageDetailsView Grid.Row="3" Grid.Column="1" DataContext="{Binding Path=ImageDetailsVM}" />
     </Grid>
 </Window>

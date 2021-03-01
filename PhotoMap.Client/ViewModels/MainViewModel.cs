@@ -13,10 +13,22 @@ namespace PhotoMap.Client.ViewModels
     {
         private PhotoAnalyzerService _analyzerService = new PhotoAnalyzerService();
         private bool _isReady;
+        private bool _canCancelScan;
         private string scanDirectoryLabel;
         private string selectedDirectoryProgressLabel;
         private DateTime? _fromDateFilter;
         private DateTime? _toDateFilter;
+
+
+        public bool CanCancelScan
+        {
+            get => _canCancelScan;
+            set
+            {
+                _canCancelScan = value;
+                OnPropertyChanged();
+            }
+        }
 
         public DateTime? ToDateFilter
         {
@@ -72,6 +84,7 @@ namespace PhotoMap.Client.ViewModels
             }
         }
 
+        public RelayCommand CancelScanCommand { get; set; }
         public RelayCommand ScanDirectoryCommand { get; set; }
         public RelayCommand OpenDirectoryCommand { get; set; }
         public BingMapService BingMapService { get; set; }
@@ -81,12 +94,24 @@ namespace PhotoMap.Client.ViewModels
         {
             ImageDetailsVM = new ImageDetailsViewModel();
             ScanDirectoryCommand = new RelayCommand(ScanDirectoryCommandExecute, CanScanDirectoryCommandExecute);
+            CancelScanCommand = new RelayCommand(CancelScanCommandExecute, CanCancelScanCommandExecute);
             OpenDirectoryCommand = new RelayCommand(OpenDirectoryCommandExecute, CanOpenDirectoryCommandExecute);
 
             _analyzerService.Worker.ProgressChanged += Worker_ProgressChanged;
             _analyzerService.Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
 
             ScanDirectoryLabel = "Scan directory";
+        }
+
+        private bool CanCancelScanCommandExecute(object arg)
+        {
+            return _analyzerService.Worker.IsBusy;
+        }
+
+        private void CancelScanCommandExecute(object obj)
+        {
+            if (_analyzerService.Worker.IsBusy)
+                _analyzerService.CancelAnalysis();
         }
 
         private bool CanOpenDirectoryCommandExecute(object arg)
@@ -119,11 +144,7 @@ namespace PhotoMap.Client.ViewModels
             FromDateFilter = null;
             ToDateFilter = null;
 
-            if (_analyzerService.Worker.IsBusy)
-            {
-                _analyzerService.CancelAnalysis();
-            }
-            else
+            if (!_analyzerService.Worker.IsBusy)
             {
                 using (var dialog = new FolderBrowserDialog())
                 {
@@ -137,6 +158,7 @@ namespace PhotoMap.Client.ViewModels
                         _analyzerService.ScanDirectory(folder);
                         _analyzerService.StartAnalysis();
                         ScanDirectoryLabel = "Cancel";
+                        CanCancelScan = true;
                     }
                 }
             }
@@ -157,6 +179,7 @@ namespace PhotoMap.Client.ViewModels
         private void Worker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             ScanDirectoryLabel = "Scan directory";
+            CanCancelScan = false;
 
             if (_analyzerService.Result.Count > 0)
                 IsReady = true;
