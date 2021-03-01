@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="PhotoMap.Client.Views.ImageDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:PhotoMap.Client.Converters"
+             xmlns:local="clr-namespace:PhotoMap.Client.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+        <converters:StringToBitmapConverter x:Key="BitmapConverter" />
+        <converters:StringToVisibilityConverter x:Key="StringVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Image Grid.ColumnSpan="2" 
+                   Grid.Row="0" 
+                   Grid.Column="0" 
+                   Cursor="Hand" 
+                   Visibility="{Binding Path=CanOpenImage, Converter={StaticResource VisibilityConverter}}"
+                   Source="{Binding Path=SelectedImageFileName, Converter= {StaticResource BitmapConverter}}">
+            <Image.InputBindings>
+                <MouseBinding Gesture="LeftClick" Command="{Binding Path=OpenImageCommand}" />
+            </Image.InputBindings>
+        </Image>
+
+        <Label x:Name="PhotoTakenLabel" Grid.Row="1" Grid.Column="0" Visibility="{Binding Path=PhotoTaken, Converter={StaticResource StringVisibilityConverter}}">Photo taken:</Label>
+        <Label x:Name="PhotoTakenValue" Grid.Row="1" Grid.Column="1" Content="{Binding Path=PhotoTaken}"></Label>
+    </Grid>
+</UserControl>

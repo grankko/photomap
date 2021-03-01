@@ -23,6 +23,8 @@ namespace PhotoMap.Analyzer
 
         public PhotoAnalyzerService()
         {
+            Result = new List<PhotoMetadataModel>();
+
             Worker.DoWork += AnalyzeFiles;
             Worker.WorkerReportsProgress = true;
             Worker.WorkerSupportsCancellation = true;
